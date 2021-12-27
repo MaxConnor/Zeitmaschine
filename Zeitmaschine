@@ -1,0 +1,580 @@
+
+#include <Wire.h> // Wire Bibliothek einbinden
+#include <LiquidCrystal_I2C.h> // Vorher hinzugefügte LiquidCrystal_I2C Bibliothek einbinden
+LiquidCrystal_I2C lcd(0x27, 20, 4);   
+#include <PS2Keyboard.h>
+
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+ #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+#endif
+
+
+
+Adafruit_NeoPixel pixels(64, 7  , NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip(24, 6, NEO_GRB + NEO_KHZ800);
+
+#define DELAYVAL 500 // Time (in milliseconds) to pause between pixels
+
+
+//Input
+
+
+//Flag
+  //Keyboard
+int pos = 1 ;  
+int wert = 0;
+int wert1 = 0;
+int wert2 = 0;
+int wert3 = 0;
+int wert4 = 0;
+int enter = 0;
+int multi = 0;
+int flagp = 0;
+int flagm = 0;
+int zahl = 0;
+const int DataPin = 2;
+const int IRQpin =  3;
+char c ;
+  //Switch
+int buttonState27 = 0;
+int buttonState29 = 0;
+int buttonState35 = 0;
+int buttonState33 = 0;
+int buttonState43 = 0;
+int buttonState45 = 0;
+int buttonState51 = 0;
+int buttonState53 = 0;
+//Poti
+int Potival1 = 0;
+int Potival2 = 0;
+int Potival3 = 0;
+int Poti1 = 0;
+int Poti2 = 0;
+int Poti3 = 0;
+//State
+int State1 = 0;
+int State2 = 0;
+int State3 = 0;
+int State4 = 0;
+int State5 = 0;
+int State1f =0;
+int State2f =0;
+int State3f =0;
+int State4f =0;
+int State5f =0;
+//Battery
+int buttonState10 = 0;
+int buttonState11 = 0;
+int buttonState12 = 0;
+int buttonState13 = 0;
+int R= 0;
+int G = 0;
+float B= 0;
+float b =0;
+int flag = 0;
+long randNumberR;
+long randNumberG;
+long randNumberB;
+int Y1 = 0;
+int X1 = 8;
+int C1 = 16;
+int randomA = 0;
+int randomB = 0;
+int randomC = 0;
+//Reisen
+int buttonState17 = 0;
+int buttonState18 = 0;
+int reisen = 0;
+
+//Output
+    
+PS2Keyboard keyboard;
+
+void setup() {
+  pinMode(27, INPUT);
+  pinMode(29, INPUT);
+  pinMode(35, INPUT);
+  pinMode(33, INPUT);
+  pinMode(43, INPUT);
+  pinMode(45, INPUT);
+  pinMode(51, INPUT);
+  pinMode(53, INPUT);
+  pinMode(A4, INPUT);
+  pinMode(A2, INPUT);  
+  pinMode(A0, INPUT);
+  pinMode(10, INPUT);                                                                                                                        
+  pinMode(12, INPUT);
+  pinMode(13, INPUT);
+  pinMode(17, INPUT);
+  pinMode(18, INPUT);
+   
+  lcd.init(); //Im Setup wird der LCD gestartet 
+lcd.backlight();
+  delay(1000);
+  keyboard.begin(DataPin, IRQpin);
+  Serial.begin(9600);
+
+  delay(100);
+  #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+  clock_prescale_set(clock_div_1);
+#endif
+  // END of Trinket-specific code.
+
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.show();
+strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.show();  
+      randomSeed(analogRead(A5));
+  Serial.println("Ready");
+
+}
+
+void loop() {
+  {//Input Read    
+   buttonState27 = digitalRead(27);
+   buttonState29 = digitalRead(29);
+   buttonState35 = digitalRead(35);
+   buttonState33 = digitalRead(33);
+   buttonState43 = digitalRead(43);
+   buttonState45 = digitalRead(45);
+   buttonState51 = digitalRead(51);
+   buttonState53 = digitalRead(53);
+   buttonState10 = digitalRead(10);
+   buttonState11 = digitalRead(11);
+   buttonState12 = digitalRead(12);
+   buttonState13 = digitalRead(13);
+   buttonState17 = digitalRead(17);
+   buttonState18 = digitalRead(18);
+  }
+  {//Collor
+   Potival1 = analogRead(A0);
+   Potival2 = analogRead(A2);
+   Potival3 = analogRead(A4);
+
+   Poti1 = map(Potival1, 0, 1023, 0, 255);
+   Poti2 = map(Potival2, 0, 1023, 0, 255);
+   Poti3 = map(Potival3, 0, 1023, 0, 255);
+  }
+
+  {//State
+
+    
+    if(buttonState51 == HIGH && buttonState43 == HIGH && buttonState35 == HIGH && buttonState27 == HIGH && State1f == LOW){
+      State1 = HIGH;
+      State1f = HIGH;
+      lcd.setCursor(0,3);
+      lcd.print("State 1 Arming");
+
+    }
+
+    if(buttonState53 == HIGH && buttonState43 == HIGH && buttonState35 == HIGH && buttonState27 == HIGH && State2f == LOW){
+      State2 = HIGH;
+      State1 = LOW;
+      State2f = HIGH;
+      lcd.setCursor(0,3);
+      lcd.print("State 1 Armed  ");
+      delay(3000);
+      lcd.setCursor(0,3);
+      lcd.print("State 2 Arming");
+
+    }
+
+    if(buttonState53 == HIGH && buttonState45 == HIGH && buttonState35 == HIGH && buttonState27 == HIGH && State3f == LOW){
+      State3 = HIGH;
+      State2 = LOW;
+      State3f = HIGH;
+      lcd.setCursor(0,3);
+      lcd.print("State 2 Armed  ");
+      delay(3000);
+      lcd.setCursor(0,3);
+      lcd.print("State 3 Arming");
+
+    }
+
+    if(buttonState53 == HIGH && buttonState45 == HIGH && buttonState33 == HIGH && buttonState27 == HIGH && State4f == LOW){
+      
+      Serial.println("State 4 Arming  ");
+      State4 = HIGH;
+      State3 = LOW;
+      State4f = HIGH;
+      lcd.setCursor(0,3);
+      lcd.print("State 3 Armed  ");
+      delay(3000);
+      lcd.setCursor(0,3);
+      lcd.print("State 4 Arming");
+      Serial.println("State 4 Arming  ");
+    }
+
+    
+    if(buttonState53 == HIGH && buttonState45 == HIGH && buttonState33 == HIGH && buttonState29 == HIGH && State5f == LOW){
+      State5 = HIGH;
+      State4 = LOW;
+      State5f =HIGH;
+      lcd.setCursor(0,3);
+      lcd.print("State 4 Armed  ");
+      delay(3000);
+      lcd.setCursor(0,3);
+      lcd.print("Reise Bereit ");
+    }
+
+    if(buttonState51 == HIGH && buttonState43 == HIGH && buttonState35 == HIGH && buttonState27 == HIGH){
+      State1f= LOW;
+      State2f= LOW;   
+      State3f= LOW;
+      State4f= LOW;
+      State2= LOW;   
+      State3= LOW;
+      State4= LOW;     
+      State5= LOW; 
+      reisen = LOW;    
+    }   
+  }
+  {//Matrix
+if (State2 == HIGH){
+
+  // The first NeoPixel in a strand is #0, second is 1, all the way up
+  // to the count of pixels minus one.
+  for(int i=0; i<64; i++) { // For each pixel...
+
+    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    pixels.setBrightness(20);
+    pixels.setPixelColor(i, pixels.Color(Poti1, Poti2, Poti3));
+
+    pixels.show();   // Send the updated pixel colors to the hardware.
+
+    delay(1); // Pause before next pass through loop
+
+
+  }
+  }
+  }
+  {//LCD
+  lcd.setCursor(0,0);
+  lcd.print("Start:3.12.2021");
+  lcd.setCursor(0,1);
+  lcd.print("Ziel: 3.12.");
+  lcd.setCursor(11,1);
+  lcd.print(wert);
+
+  }
+  {//Keyboard
+if (State1 == HIGH){
+  if (keyboard.available()) {
+
+
+ c = keyboard.read();
+
+
+
+    if (c == PS2_ENTER) {
+      enter = 1;
+
+    } 
+     else if (c == PS2_DELETE) {
+      Serial.print("[Del]");
+      pos = 1;
+      wert= 0;
+      wert1= 0;
+      wert2= 0;
+      wert3= 0;
+      wert4= 0;
+    } else {
+      
+
+
+    }
+  }
+  
+  
+  if ( enter == 1){
+
+      Serial.println(wert);
+      Serial.print("POS:");
+      Serial.println(pos);
+      enter = 0;
+  }
+      if (c == '+' and flagp == 0){
+      pos = pos +1;
+      flagp = 1;
+      wert = wert1 + wert2 + wert3 + wert4 ; 
+      Serial.println(wert);
+      Serial.print("POS:");
+      Serial.println(pos);
+    }
+          if (c == '-' and flagm == 0){
+      pos = pos -1;
+      flagm = 1;
+      wert = wert1 + wert2 + wert3 + wert4 ; 
+    }
+    if (c != '-'){
+      flagm = 0;
+    }
+        if (c != '+'){
+      flagp = 0;
+    }
+  
+        if (pos == 1) {
+      wert1 = zahl * 1000;
+      zahl  = 0;
+            
+    }
+          if (pos == 2) {
+      wert2 = zahl * 100;
+      zahl  = 0;
+    }
+          if (pos == 3) {
+      wert3 = zahl * 10;
+      zahl  = 0;
+    }
+          if (pos == 4) {
+      wert4 = zahl * 1;
+      zahl  = 0;
+    }
+  {
+    if (c == '1'){
+      zahl = 1;
+    }
+    if (c == '2'){
+      zahl = 2;
+    }
+    if (c == '3'){ 
+      zahl = 3;
+    }
+    if (c == '4'){
+      zahl = 4;
+    }
+    if (c == '5'){
+      zahl = 5;
+    }
+    if (c == '6'){
+      zahl = 6;
+    }
+    if (c == '7'){
+      zahl = 7;
+    }
+    if (c == '8'){
+      zahl = 8;
+    }
+    if (c == '9'){ 
+      zahl = 9;
+    }
+    if (c =='0'){
+      zahl = 0;
+    }    
+}
+      wert = wert1 + wert2 + wert3 + wert4 ; 
+  }
+  }
+  {//Batteri
+    if (State3 == HIGH){
+    if (buttonState10 == HIGH){
+
+  for(int i=0; i<24; i++) { // For each pixel...
+
+    strip.setBrightness(24);
+    strip.setPixelColor(i, strip.Color(255, 0, 0));
+
+    
+    strip.show();   // Send the updated pixel colors to the hardware.
+    delay(100);
+ // Pause before next pass through loop
+
+    }
+      for(int i=0; i<24; i++) { // For each pixel...
+
+    strip.setBrightness(24);
+    strip.setPixelColor(i, strip.Color(0, 255, 0));
+
+    
+    strip.show();   // Send the updated pixel colors to the hardware.
+    delay(100);
+ // Pause before next pass through loop
+
+    }
+      for(int i=0; i<24; i++) { // For each pixel...
+
+    strip.setBrightness(24);
+    strip.setPixelColor(i, strip.Color(0, 0, 255));
+
+    
+    strip.show();   // Send the updated pixel colors to the hardware.
+    delay(100);
+ // Pause before next pass through loop
+    }
+  }
+    if (buttonState11 == HIGH){
+        for(int i=0; i<24; i++) { // For each pixel...
+
+    strip.setBrightness(b);
+    strip.setPixelColor(i, strip.Color(randNumberR, randNumberG, randNumberB));
+
+    
+    strip.show();   // Send the updated pixel colors to the hardware.
+    if (b >= 100){
+    randNumberR = random(0, 256);
+randNumberG = random(0, 256);
+randNumberB = random(0, 256);
+    flag = 1;
+    }
+    if (b <= 0){
+      randNumberR = random(0, 256);
+randNumberG = random(0, 256);
+randNumberB = random(0, 256);
+    flag = 0;
+    }
+
+    if (flag == 1){
+      b = b -0.2;
+    }
+    else
+    b = b+0.2;
+    Serial.println(b);
+    delay(1);
+
+    }
+    }
+    if (buttonState12 == HIGH){
+          strip.setBrightness(25);
+    for(int i=0; i<24; i++) { // For each pixel...
+
+
+    strip.setPixelColor(Y1, strip.Color(255, 0, 0));
+    strip.setPixelColor(X1, strip.Color(0, 255, 0));
+    strip.setPixelColor(C1, strip.Color(0, 0, 255));
+
+
+    strip.show();  
+    delay(20);
+}
+if ( X1 == 24){
+  X1 = 0;
+}
+else
+X1  = X1+ 1;
+
+if ( Y1 == 24){
+ Y1 = 0;
+}
+else
+Y1  = Y1+ 1;
+
+if ( C1 == 24){
+  C1 = 0;
+}
+else
+C1 = C1+ 1;
+    }
+    if (buttonState13 == HIGH){
+  randomA = random(0, 25);
+  randomB = random(0, 25);
+  randomC = random(0, 25);
+    for(int i=0; i<24; i++) { // For each pixel...
+
+
+    strip.setPixelColor(randomA, strip.Color(255, 0, 0));
+    strip.setPixelColor(randomB, strip.Color(0, 255, 0));
+    strip.setPixelColor(randomC, strip.Color(0, 0, 255));
+
+
+    strip.show();  
+    delay(20);
+}
+    }
+    if (buttonState10 == LOW and buttonState11 == LOW and buttonState12 == LOW and buttonState13 == LOW){
+    for(int i=0; i<24; i++) { // For each pixel...
+
+
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+
+
+
+    strip.show();  
+    delay(20);
+}
+    }
+    }
+  }
+  {//Reise
+    Serial.println(buttonState17);
+    if (State5 ==HIGH and reisen == LOW){
+      if (buttonState17== HIGH){
+        reisen = HIGH;
+      pixels.setBrightness(10);
+      s trip.setBrightness(10);
+      lcd.backlight();
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(255, 255, 255));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(255, 255, 255));
+      pixels.show();  
+      delay(1);
+      }
+      delay(300);
+      lcd.noBacklight();
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      pixels.show();  
+      delay(1);
+      }      
+      delay(300);      lcd.backlight();
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(255, 255, 255));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(255, 255, 255));
+      pixels.show();  
+      delay(1);
+      }
+      delay(300);
+      lcd.noBacklight();
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      pixels.show();  
+      delay(1);
+      }      
+      delay(300);      lcd.backlight();
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(255, 255, 255));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(255, 255, 255));
+      pixels.show();  
+      delay(1);
+      }
+      delay(300);
+      for(int i=0; i<24; i++) { // For each pixel...
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+      strip.show();  
+      delay(1);
+      }
+      for(int i=0; i<64; i++) { // For each pixel...
+      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      pixels.show();  
+      delay(1);
+      }      
+      delay(300);
+      }
+      
+    }
+  
+  }
+} 
